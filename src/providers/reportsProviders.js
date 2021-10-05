@@ -1,4 +1,6 @@
 var xl = require('excel4node');
+var fs = require('express');
+//hacer que una misma instancia use ese modulo
 
 
 function generateExcel() {
@@ -46,6 +48,7 @@ function generateExcel() {
     .style({font: {size: 14}});
 
     wb.write('Excel.xlsx');
+
     
 }
 
