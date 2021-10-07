@@ -13,6 +13,14 @@ router.get('/', (req, res) => {
     res.send('Hello, I am here');
 })
 
+/*
+Función download para generar y descargar el Excel
+----------------------------------------------------------------
+Entrada: req y res
+
+Salida: Excel generado y descargado con la funcion generateExcel() y download del res.
+*/
+
 router.get('/download', async (req, res) => {
     generateExcel();
     res.download('Excel.xlsx');

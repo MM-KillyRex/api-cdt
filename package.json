@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node Src/Server.js"
+    "dev": "nodemon Src/Server.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "excel4node": "^1.7.2",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
-    "mygeotab-api-node": "^2.0.0"
+    "mygeotab-api-node": "^2.0.0",
+    "nodemon": "^2.0.13"
   }
 }
