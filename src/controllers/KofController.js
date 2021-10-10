@@ -23,7 +23,13 @@ Salida: Excel generado y descargado con la funcion generateExcel() y download de
 
 router.get('/download', async (req, res) => {
     generateExcel();
-    res.download('Excel.xlsx');
+    setTimeout(function() {res.download('Excel.xlsx')}, 3000)
+    
+})
+router.get('/excel', async (req, res) => {
+    
+    
+    res.send('Excel generado!');
 })
 
 module.exports = router;

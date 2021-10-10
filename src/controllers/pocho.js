@@ -32,15 +32,17 @@ private static HttpResponseMessage generarReporte(List<SpReporteDiarioNaReturnMo
             KofSabana kofSabana = (
                 from x in lstDatosDevices
                 where x.Id.ToString() == lstDatum.sId
-                select x).FirstOrDefault<KofSabana>();
+                select x.FirstOrDefault<KofSabana>();
             UltimaComunicacion ultimaComunicacion = (
                 from x in lstUltCom
                 where x.IdUnidad == lstDatum.sId
+            
                 select x).FirstOrDefault<UltimaComunicacion>();
             int num7 = 1;
             TimeSpan timeSpan = TimeSpan.FromDays(2);
             if (ultimaComunicacion != null)
             {
+                // checar si aun esta comunicando el device
                 num7 = ((lstDatum.dtFecha - ultimaComunicacion.DtGps) >= timeSpan ? 0 : 1);
                 if (num7 == 0)
                 {
@@ -375,3 +377,18 @@ private static HttpResponseMessage generarReporte(List<SpReporteDiarioNaReturnMo
     }
     return httpResponseMessage;
 }
+
+
+
+const express = require('express');
+
+const ReportsService = require('../../services/reportsService');
+
+const validationHandler = require('../../utils/middleware/validationHandler');
+const drivingMiddleware = require('../../utils/middleware/driving.middleware');
+
+const keyHandler = require('../../utils/middleware/keyHandler');
+
+
+
+module.exports = reportsApi;
