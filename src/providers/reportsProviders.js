@@ -102,9 +102,9 @@ function generateExcel() {
     { titulo:"Entradas a Taller (eventos)", color:"#E3B1D2"  ,cf:"#FF0000"}, 
     { titulo:"Duración en taller (total)", color:"#E3B1D2"  ,cf:"#FF0000"},
     // Columna verde claro 1
-    { titulo:"Comunicando", color:"#98FF98" ,cf:"#FF0000"}
+    { titulo:"Comunicando", color:"#98FF98" ,cf:"#FF0000",}
     ];
-
+    
     
     //insertar fila de titulos
 
