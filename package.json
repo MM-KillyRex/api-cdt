@@ -16,7 +16,9 @@
     "express": "^4.17.1",
     "morgan": "^1.10.0",
     "mygeotab-api-node": "^2.0.0",
+    "nodemailer": "^6.7.0",
     "nodemon": "^2.0.13",
+    "path": "^0.12.7",
     "read-excel-file": "^5.2.14",
     "xlsx": "^0.17.2"
   }
