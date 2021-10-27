@@ -1,9 +1,12 @@
-var xl = require('excel4node');
-var objEx = require('read-excel-file/node')
-var XLSX = require("xlsx");
+const _ = require('lodash');
+const camelize = require('camelize');
+const xl = require('excel4node');
+const objEx = require('read-excel-file/node')
 
-async function generateExcel() {
-    await generateTitles();
+
+const generateExcel = async () => {
+    const result = await generateTitles();
+    return camelize(result);
 }
 
 let status = false;
@@ -179,7 +182,6 @@ async function generateTitles() {
             rowIndex++;
         })
         // module.exports = datos;   
-        console.log("Exporto datos");
         wb.write('Excel.xlsx');
         return status = true;
 }

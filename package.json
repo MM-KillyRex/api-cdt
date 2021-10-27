@@ -11,15 +11,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "camelize": "^1.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "excel4node": "^1.7.2",
     "express": "^4.17.1",
+    "http-status-codes": "^2.1.4",
+    "loadash": "^1.0.0",
     "morgan": "^1.10.0",
     "mygeotab-api-node": "^2.0.0",
     "nodemailer": "^6.7.0",
     "nodemon": "^2.0.13",
     "path": "^0.12.7",
+    "pg": "^8.7.1",
     "read-excel-file": "^5.2.14",
+    "sequelize": "^6.7.0",
     "xlsx": "^0.17.2"
   }
 }
