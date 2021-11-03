@@ -26,6 +26,7 @@
     "pg": "^8.7.1",
     "read-excel-file": "^5.2.14",
     "sequelize": "^6.7.0",
+    "timespan": "^2.3.0",
     "xlsx": "^0.17.2"
   }
 }
