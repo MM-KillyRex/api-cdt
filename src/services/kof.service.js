@@ -68,7 +68,7 @@ function generarReporte(LstData, LstDatosDevice, LstUltCom) {
             if (DistaciaTrips <= 0) {
                 SpReporteDiario = lstDatum;
                 DistaciaTrips = lstDatum.Distacia_Trips;
-                SpReporteDiario.Distacia_Trips = (DistaciaTrips = undefined ? 0 : lstDatum.Distacia_Trips);
+                SpReporteDiario.Distacia_Trips = (DistaciaTrips == undefined ? 0 : lstDatum.Distacia_Trips);
                 lstDatum.iKilometrajeInicial = 0;
                 lstDatum.iKilometrajeFinal = lstDatum.Distacia_Trips;
                 lstDatum.iKilometrajeRecorrido = lstDatum.Distacia_Trips;
