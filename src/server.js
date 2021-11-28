@@ -32,8 +32,16 @@ app.use(
   app.use(logErrors);
   app.use(clientErrorHandler);
   app.use(errorHandler);
-
-//Starting the server
-app.listen(port, () => {
-  console.log(`API listenning on port ${port}`);
-})
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));  
+  
+  dbHelper.sequelize
+  .authenticate()
+  .then(() => {
+    app.listen(process.env.HTTP_PORT, async () => {
+      console.log(`Listen port: ${process.env.HTTP_PORT}`);
+    });
+  })
+  .catch((err) => {
+    throw err;
+  });
