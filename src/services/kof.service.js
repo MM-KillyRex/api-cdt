@@ -1,4 +1,4 @@
-const { datos, generateTitles } = require('./reports.service')
+/*const { datos, generateTitles } = require('./reports.service')
 
 const getData = async() => {
     await generateTitles();
@@ -293,3 +293,4 @@ function generarReporte(LstData, LstDatosDevice, LstUltCom) {
         throw exception;
     }
 }
+*/

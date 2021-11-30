@@ -1,4 +1,4 @@
-const _ = require('lodash');
+/*const _ = require('lodash');
 const camelize = require('camelize');
 const xl = require('excel4node');
 const objEx = require('read-excel-file/node')
@@ -193,3 +193,4 @@ module.exports = {
     generateTitles,
     datos
 }
+*/

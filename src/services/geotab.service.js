@@ -1,15 +1,15 @@
 const GeotabHelper = require('../helpers/geotab.helper')
-const GeotabConfig = require('../environments/geotab.config');
+const {username, password, database, server, sessionId} = require('../environments/geotab.config');
 const _ = require('lodash')
 
 class GeotabService extends GeotabHelper {
-  constructor(username, password, database, server, sessionId) {
+  constructor() {
     super({username, password, database, server, sessionId})
   }
 
 
               // Groups Request
-              async getGroups() {
+            async getGroups() {
                 try {
                   const api = await super.getApi()
                   const groups = await api.callAsync('Get', {
@@ -35,7 +35,7 @@ class GeotabService extends GeotabHelper {
               }
               
               // Rules Request
-              async getRules() {
+            async getRules() {
                 try {
                   const api = await super.getApi()
                   const devices = await api.callAsync('Get', {
@@ -48,6 +48,6 @@ class GeotabService extends GeotabHelper {
               }
 }
 
-//module.exports = new GeotabService(GeotabConfig);
+//module.exports = new GeotabService(username, password, database, server, sessionId);
 
-module.exports = new GeotabService('integration.kof-c5', 'zD3Y)nkp70ikiU', 'kof', 'https://my182.geotab.com/', 'wwqeqweqweqweqw');
+module.exports = new GeotabService();
