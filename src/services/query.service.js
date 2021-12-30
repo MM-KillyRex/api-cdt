@@ -8,17 +8,18 @@ const geotabService = require('../services/geotab.service');
 
 
 
-const getStatusKof = async () => {
-
-    const result = await queryRepository.getReportKof();
+const getStatusKof = async (sIds, dtFrom, dtTo) => {
     
+    const result = await queryRepository.getReportKof({sIds, dtFrom, dtTo});
+    if(!result)
+        return
     // Disposotivos
     const devices = await geotabService.getDevices();
     const devicesDict = _.keyBy(devices, 'id');
     
     // Grupos
     const groups = await geotabService.getGroups();
-    const groupsDict = _.keyBy(groups, 'id');
+    const groupsDict = _.keyBy(groups, e => e.id.toLowerCase());
 
     //56 bd
     const params = [
@@ -80,14 +81,38 @@ const getStatusKof = async () => {
 
     const reportData = result.map(e => {
         
+ 
+
         const device = devicesDict[e.sId];
         const economico = device.name;
-        const tipo = device.tipo;
-        const marca = device.brand;
-        const modelo = device.model;
+
+        // tipo
+        const group7 = groupsDict['b28c2'];
+        group7.children = group7.children.map(e => groupsDict[e.id]);
+        const tipo = device.groups.find(e => group7.children.find(f => f.id === e.id )).name;
+
+        // marca - ultimo de los children 
+        const group6 = groupsDict['b27C4'];
+        group6.children = group6.children.map(e => groupsDict[e.id]);
+        const marcas = group6.children;
+        const modelos = marcas.map(e => e.children.map(e => groupsDict[e.id])).flat(); // recorrer array marcas
+
+        const modeloDevice = device.groups.find(e => modelos.find(f => f.id === e.id));
+        // Marca device 
+        const marca = marcas.find(e => e.children.some(f => f.id === modeloDevice.id)).name;
+        // Modelo device
+        const modelo = modeloDevice.name;
+        // Año
         const year = device.year;
+        // No Serie
         const noSerie = device.serialNumber;
-        const emplazamiento = groupsDict[device.groups[0].id].name
+        // Group 4 - Emplazamiento
+        const emplazamientos = [grupo4, ...grupo4.children]; // crear arreglo del gpo 4 y sus hijos al mismo level
+        const emplazamiento = device.groups.find(e => emplazamientos.find(f => f.id === e.id)).name;
+        // const group6 = groupsDict['b27C4'];
+        // group6.children = group6.children.map(e => groupsDict[e.id]);
+     
+
         const date = e.dtFecha;
         const week = moment(date).week();
         const can = "";
@@ -368,14 +393,27 @@ const getStatusKof = async () => {
 
 const insert = (array, i, item) => [...array.slice(0, i), item, ...array.slice(i)];
 
-const generateXLSX = () => {
-    const wb = xlsx.fromFileAsync(getPath('../docs/template.xlsx'));
+
+const generateXLSX = async (Ids, dtTo, dtFrom) => {
+    const wb = await xlsx.fromFileAsync('docs/template.xlsx');
     const sheet1 = wb.sheet(0);
-    const report = getStatusKof();
+    const report = await getStatusKof(Ids, dtTo, dtFrom);
+    if(report.length)
     sheet1.cell("A2").value(report);
+    return wb.outputAsync();
 }
 
+/*
+const generateXLSX = () => {
+    xlsx.fromBlankAsync('docs/template.xlsx')
+    .then(workbook => {
+        const report = getStatusKof();
+        const value = workbook.sheet("Sheet1").cell("A1").value(report);
 
+        console.log(value);
+    })
+}
+*/
 const validar = valor => valor || 0;
 
 module.exports = {

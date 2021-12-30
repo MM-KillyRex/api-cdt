@@ -1,4 +1,4 @@
-
+/*
 const express = require('express');
 
 const hasAPIKey = require('../middlewares/verifyAPIkey.handler');
@@ -11,8 +11,8 @@ app.use(require('./reports.route'));
 
 module.exports = app;
 
+*/
 
-/*
 const express = require('express')
 const app = express()
 
@@ -20,4 +20,3 @@ app.use(require('./reports.route'))
 
 
 module.exports = app
-*/

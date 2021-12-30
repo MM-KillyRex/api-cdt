@@ -1,5 +1,5 @@
 
-const { reportsService, kofService, emailService } = require('../services/index.service');
+const { reportsService, kofService, emailService, queryService } = require('../services/index.service');
 
 /*
 const server = process.env.GEOTAB_SERVER;
@@ -22,6 +22,18 @@ const downloadExcel = (req, res, next) => {
         next(err);
     }
 }
+
+const downloadExcel2 = async (req, res, next) => {
+    try{
+        const {sIds,dtFrom, dtTo} = req.query
+        const result = await queryService.generateXLSX(sIds, dtFrom, dtTo);
+        res.attachment('uwu.xlsx');
+        return res.status(200).send(result);
+    } catch(err){
+        next(err);
+    }
+}
+
 
 
 /*
@@ -69,6 +81,7 @@ const sendEmail = async (req, res, next) => {
 
 module.exports = {
     downloadExcel,
+    downloadExcel2,
     getData,
     sendEmail
   };

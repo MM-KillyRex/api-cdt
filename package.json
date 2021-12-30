@@ -22,6 +22,7 @@
     "jsonwebtoken": "^8.5.1",
     "loadash": "^1.0.0",
     "luxon": "^2.1.1",
+    "mg-api-js": "^2.0.4",
     "moment-timezone": "^0.5.33",
     "morgan": "^1.10.0",
     "mygeotab-api-node": "^2.0.0",

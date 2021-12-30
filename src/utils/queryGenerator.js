@@ -6,7 +6,7 @@ module.exports = async function(query, replacements, oneRecord) {
             replacements,
             type: Sequelize.QueryTypes.SELECT,
             raw: true,
-            plain: oneRecord,
+            plain: false,
         })
 
         return result
