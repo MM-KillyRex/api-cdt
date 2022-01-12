@@ -19,7 +19,7 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
     
     // Grupos
     const groups = await geotabService.getGroups();
-    const groupsDict = _.keyBy(groups, e => e.id.toLowerCase());
+    const groupsDict = _.keyBy(groups, e => e.id);
 
     //56 bd
     const params = [
@@ -79,42 +79,54 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
      "Distancia_Trips", //53
     ]
 
+    // tipo
+    const group7 = groupsDict['b28C2'];
+    group7.children = group7.children.map(e => groupsDict[e.id]);
+
+    // marca - ultimo de los children 
+    const group6 = groupsDict['b27C4'];
+    group6.children = group6.children.map(e => groupsDict[e.id]);
+    const marcas = group6.children;
+
+
+    const modelos = marcas.map(e => e.children.map(e => groupsDict[e.id])).flat(); // recorrer array marcas
+
+    const group4 = groupsDict['b2844'];
+    
+    fillChildren(group4, groupsDict, 4);
+    
+    const emplazamientos = flatten(group4, 3);
+
+    const yearDevice = groupsDict['b27C5'];
+    fillChildren(yearDevice, groupsDict, 2);
+
     const reportData = result.map(e => {
         
- 
 
         const device = devicesDict[e.sId];
         const economico = device.name;
 
-        // tipo
-        const group7 = groupsDict['b28c2'];
-        group7.children = group7.children.map(e => groupsDict[e.id]);
-        const tipo = device.groups.find(e => group7.children.find(f => f.id === e.id )).name;
+        const tipo = group7.children.find(e => device.groups.find(f => f.id === e.id ))?.name|| 'No asignado';
+    
+        const modeloDevice = modelos.find(e => device.groups.find(f => f.id === e.id));
 
-        // marca - ultimo de los children 
-        const group6 = groupsDict['b27C4'];
-        group6.children = group6.children.map(e => groupsDict[e.id]);
-        const marcas = group6.children;
-        const modelos = marcas.map(e => e.children.map(e => groupsDict[e.id])).flat(); // recorrer array marcas
-
-        const modeloDevice = device.groups.find(e => modelos.find(f => f.id === e.id));
         // Marca device 
         const marca = marcas.find(e => e.children.some(f => f.id === modeloDevice.id)).name;
         // Modelo device
         const modelo = modeloDevice.name;
+        
         // Año
-        const year = device.year;
+        const year = yearDevice.children.find(e => device.groups.find(f => f.id === e.id))?.name|| 'No asignado';
+
         // No Serie
         const noSerie = device.serialNumber;
         // Group 4 - Emplazamiento
-        const emplazamientos = [grupo4, ...grupo4.children]; // crear arreglo del gpo 4 y sus hijos al mismo level
-        const emplazamiento = device.groups.find(e => emplazamientos.find(f => f.id === e.id)).name;
-        // const group6 = groupsDict['b27C4'];
-        // group6.children = group6.children.map(e => groupsDict[e.id]);
-     
+        const emplazamiento = emplazamientos.find(e => device.groups.find(f => f.id === e.id))?.name|| 'No asignado';
+        
 
-        const date = e.dtFecha;
-        const week = moment(date).week();
+        const date = dtFrom.substring(0,10);
+        const week = moment(date).weeks()-3;
+
         const can = "";
         let datos = params.map(param => e[param]);
 
@@ -167,7 +179,7 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
         let stringVal;
 
         //Pendiente // Máxima duración de evento [hh:mm:ss] [15]
-        datos = [datos.slice(0,5), i, ...datos.slice(5)]; 
+        //datos = [datos.slice(0,5), i, ...datos.slice(5)]; 
 
 
         //const datos2 = datos.slice(5); Obtener el arreglo de 5 elems
@@ -206,38 +218,24 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
 
         // Operación debajo de temperatura mínima recomendada Celda 17
         num = validar(MaximaTempDuracion)
-        /*
-        if(distanceTrips !== null || distanceTrips !== undefined) {
-            distanceTrips = MaximaTempDuracion;
-            num = distanceTrips;
-        } else {
-            num = 0;
-        }
-        */
+   
         // Insercion valor
         insert(datos, 5, num); // ?
         
         // Insersion valor Máxima duración de evento debajo de temperatura mínima de operación Celda 18
         valueProm = validar(TiempoTemperatura); 
-        /*
-        if(distanceTrips !== null || distanceTrips !== undefined) {
-            distanceTrips = TiempoTemperatura;
-            valueProm = distanceTrips;
-        } else {
-            valueProm = 0;
-        }
-        */
-
         // Insercion valor 
-        const promTemp = Duration.fromMillis(valueProm).toFormat('hh:mm:ss.SSS');
-        //const iPromTemp =  insert(datos, 7, promTemp); // ?
-        insert(datos, 7, promTemp);
+        const promTemp = Duration.fromMillis(valueProm).toFormat('hh:mm:ss').toString();
+        insert(datos, 7, promTemp); // ?
+    
+        //insert(datos, 7, promTemp);
         
         // Temperatura promedio de operación Celda 19
         ////// distanceTrips = MinimaTempDuracion;
         valCalcMin = validar(MinimaTempDuracion);
-        const rendCal = Duration.fromMillis(valCalcMin).toFormat('hh:mm:ss.SSS');
+        const rendCal = Duration.fromMillis(valCalcMin).toFormat('hh:mm:ss');
         insert(datos, 6, rendCal);
+        console.log(rendCal)
 
         // dRendCalcMin Celda 20
         distanceTrips = RendCalcMin;
@@ -265,7 +263,7 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
         }
         */
         //insersion
-        const eventosRev = Duration.fromMillis(valEvRev).toFormat('hh:mm:ss.SSS');
+        const eventosRev = Duration.fromMillis(valEvRev).toFormat('hh:mm:ss').toString();
         insert(datos, 19, eventosRev);
         // datos[19] = eventosRev
 
@@ -284,24 +282,24 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
             valRalentiSum = 0;
         }
         */
-        const realentiSumT = Duration.fromMillis(valRalentiSum).toFormat('hh:mm:ss.SSS');
+        const realentiSumT = Duration.fromMillis(valRalentiSum).toFormat('hh:mm:ss').toString();
         insert(datos, 22, realentiSumT);
         // datos[22] = realentiSumT
 
         // Tiempo total de ralentí  // Celda 35
         valRalentiSumTotal = validar(iRalentiSumTotal)
-        const realentiSumTot = Duration.fromMillis(valRalentiSumTotal).toFormat('hh:mm:ss.SSS');
+        const realentiSumTot = Duration.fromMillis(valRalentiSumTotal).toFormat('hh:mm:ss').toString();
         insert(datos, 23, realentiSumTot);
         // datos[23] = realentiSumTot
 
         // Tiempo Ralenti UO --> Celda 36
         distanceTrips = iRalentiMaximoTiempo;
         valRalentiMaxT = validar(iRalentiMaximoTiempo)
-        const ralentiMaxTime = Duration.fromMillis(valRalentiMaxT).toFormat('hh:mm:ss.SSS');
+        const ralentiMaxTime = Duration.fromMillis(valRalentiMaxT).toFormat('hh:mm:ss').toString();
         insert(datos, 24, ralentiMaxTime);
         // datos[24] = ralentiMaxTime
         // Tiempo Ralenti Fuera UO  --> Celda 37
-         const dExcepcionRal = moment((dExcepcionRalentiUODuracion !== null || dExcepcionRalentiUODuracion !== undefined ? dExcepcionRalentiUODuracion : 0)).milliseconds;
+         const dExcepcionRal = Duration.fromMillis((dExcepcionRalentiUODuracion !== null || dExcepcionRalentiUODuracion !== undefined ? dExcepcionRalentiUODuracion : 0)).toFormat('hh:mm:ss.SSS');
          insert(datos, 25, dExcepcionRal);
          // Máximo tiempo en ralentí (1 solo evento) 38
          // Tiempo en ralenti vs Tiempo de Operación  --> Celda 39
@@ -313,12 +311,12 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
         
          // Tiempo de Manejo --> 40
          const obj = validar(TiempoManejo);
-         const TimeDriving = Duration.fromMillis(obj).toFormat('hh:mm:ss.SSS');
+         const TimeDriving = Duration.fromMillis(obj).toFormat('hh:mm:ss').toString();
          insert(datos, 27, TimeDriving);
          // datos[27] = TimeDriving
 
          const  tiempoOp =  validar(HorasMotor);
-         const TiempoMili = Duration.fromMillis(tiempoOp).toFormat('hh:mm:ss.SSS');
+         const TiempoMili = Duration.fromMillis(tiempoOp).toFormat('hh:mm:ss').toString();
          insert(datos, 28,TiempoMili);
 
          // datos[29]
@@ -380,11 +378,11 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
         let datosXD = 0;
         let comunicando = 1;
         insert(datos, 50, datosXD);
-        let fechaNew = Duration.fromMillis(datosXD).toFormat('hh:mm:ss.SSS');;
+        let fechaNew = Duration.fromMillis(datosXD).toFormat('hh:mm:ss').toString();
         insert(datos, 51, fechaNew);
-        insert(datos, 52, comunicando);     
+        insert(datos, 52, 1);     
 
-        return ([economico, tipo, marca, modelo, year, noSerie, emplazamiento, week, can,  ...datos]) // spread 
+        return ([economico, tipo, marca, modelo, year, noSerie, emplazamiento,date, week, can,  ...datos]) // spread 
     });
 
     return reportData
@@ -393,6 +391,21 @@ const getStatusKof = async (sIds, dtFrom, dtTo) => {
 
 const insert = (array, i, item) => [...array.slice(0, i), item, ...array.slice(i)];
 
+const fillChildren = (group, groupsDict, levels = 2) => {
+    if(levels > 1) {
+      group.children = group.children.map(e => groupsDict[e.id]);
+      group.children.forEach(e => fillChildren(e, groupsDict, levels - 1));
+    }
+};
+
+const flatten = (group, levels = 2) => {
+    if(levels >= 1) {
+      return group.children.reduce((acc, e) => {
+        return acc.concat(flatten(e, levels - 1));
+      }, group.children);
+    }
+    return group.children;
+  };
 
 const generateXLSX = async (Ids, dtTo, dtFrom) => {
     const wb = await xlsx.fromFileAsync('docs/template.xlsx');
